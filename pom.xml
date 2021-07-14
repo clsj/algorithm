@@ -13,6 +13,9 @@
         <module>02-DynamicArray</module>
         <module>03-LinkedList</module>
         <module>00_LeetCode</module>
+        <module>04-Stack</module>
+        <module>05-Queue</module>
+        <module>06-tree</module>
     </modules>
 
     <properties>
