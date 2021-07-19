@@ -20,7 +20,6 @@ public abstract class BinaryTree<E> implements TreeInterface<E> , BinaryTreeInfo
         Node<E> left;
         Node<E> right;
         Node<E> parent;
-        int height;
         public Node(E element) {
             this.element = element;
         }
@@ -37,6 +36,26 @@ public abstract class BinaryTree<E> implements TreeInterface<E> , BinaryTreeInfo
         public boolean hasTwoChildren() {
             return left != null && right != null;
         }
+
+        public boolean isLeftChild() {
+            return parent != null && parent.left == this;
+        }
+
+        public boolean isRightChild() {
+            return parent != null && parent.right == this;
+        }
+
+
+        public Node<E> sibling() {
+            if (isLeftChild()) {
+                return parent.right;
+            }
+            if (isRightChild()) {
+                return parent.left;
+            }
+            return null;
+        }
+
     }
 
     @Override

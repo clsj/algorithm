@@ -1,7 +1,5 @@
 package com.sj;
 
-import com.sj.printer.BinaryTrees;
-
 import java.util.Comparator;
 
 public class BST<E> extends BinaryTree<E> {
@@ -20,7 +18,7 @@ public class BST<E> extends BinaryTree<E> {
 
         checkElementNotNull(element);
 
-        Node<E> node = new Node<>(element);
+        Node<E> node = createNode(element);
 
         if (rootNode == null) {
             rootNode = node;
@@ -63,6 +61,10 @@ public class BST<E> extends BinaryTree<E> {
 
     }
 
+    protected Node<E> createNode(E element) {
+        return new Node<>(element);
+    }
+
     protected void afterAdd(Node<E> node) {}
 
     private int compare(E e1, E e2) {
@@ -83,7 +85,7 @@ public class BST<E> extends BinaryTree<E> {
         if (node == null) {
             return;
         }
-
+        size--;
         // 度为2
         if (node.hasTwoChildren()) {
             // 获取前驱节点
@@ -97,22 +99,36 @@ public class BST<E> extends BinaryTree<E> {
         // 删除node 度为1 或者0
         Node<E> replaceNode = node.left != null ? node.left : node.right;
 
-        if (node.parent == null) {
-            replaceNode.parent = null;
-            rootNode = replaceNode;
-        }else {
-            // 度为0和1通用
-            if (node.parent.left == node) {
-                // node是左节点
+        if (replaceNode != null) { // node是度为1的节点
+            // 更改parent
+            replaceNode.parent = node.parent;
+            // 更改parent的left、right的指向
+            if (node.parent == null) { // node是度为1的节点并且是根节点
+                rootNode = replaceNode;
+            } else if (node == node.parent.left) {
                 node.parent.left = replaceNode;
-            }else {
-                // node是右节点
+            } else { // node == node.parent.right
                 node.parent.right = replaceNode;
             }
-        }
 
-        size--;
+            // 删除节点之后的处理
+            afterRemove(replaceNode);
+        } else if (node.parent == null) { // node是叶子节点并且是根节点
+            rootNode = null;
+            // 删除节点之后的处理
+            afterRemove(node);
+        } else { // node是叶子节点，但不是根节点
+            if (node == node.parent.left) {
+                node.parent.left = null;
+            } else { // node == node.parent.right
+                node.parent.right = null;
+            }
+            // 删除节点之后的处理
+            afterRemove(node);
+        }
     }
+
+    protected void afterRemove(Node<E> node) {}
 
     private Node<E> node(E element) {
 
