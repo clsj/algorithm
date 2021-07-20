@@ -20,6 +20,7 @@
         <module>08-Map</module>
         <module>09-Heap</module>
         <module>Common</module>
+        <module>10-Trie</module>
     </modules>
 
     <properties>
