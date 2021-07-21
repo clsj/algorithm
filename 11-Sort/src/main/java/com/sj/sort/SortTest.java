@@ -27,15 +27,14 @@ public class SortTest {
         for (Sort sort : sorts) {
             System.out.println(sort);
         }
-
     }
 
     public static void main(String[] args) {
-        Integer[] data = Integers.random(5000, 1, 1000000);
+        Integer[] data = Integers.random(100000, 1, 1000000);
+//        Integer[] data = Integers.random(4, 1, 20);
 //        Integer[] data = Integers.ascOrder(1, 10000);
-
-//        sort(data, new BubbleSort03<Integer>(), new SelectionSort<Integer>(), new HeapSort<Integer>());
-        sort(data, new InsertionSort02<>(), new BubbleSort03<Integer>());
+        sort(data, new MergeSort01<>(),new MergeSort02<>(), new HeapSort<>(), new QuickSort<>());
+//        sort(data, new QuickSort<>());
     }
 
 
