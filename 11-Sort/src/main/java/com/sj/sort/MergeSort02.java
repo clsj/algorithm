@@ -1,6 +1,5 @@
 package com.sj.sort;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 public class MergeSort02<E> extends Sort<E> {

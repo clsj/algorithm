@@ -30,10 +30,12 @@ public class SortTest {
     }
 
     public static void main(String[] args) {
-        Integer[] data = Integers.random(100000, 1, 1000000);
+        Integer[] data = Integers.random(500000, 1, 500);
 //        Integer[] data = Integers.random(4, 1, 20);
 //        Integer[] data = Integers.ascOrder(1, 10000);
+//        Integer[] data = new Integer[] {10, 10, 2, 23, 40};
         sort(data, new MergeSort01<>(),new MergeSort02<>(), new HeapSort<>(), new QuickSort<>());
+
 //        sort(data, new QuickSort<>());
     }
 

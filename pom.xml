@@ -22,6 +22,7 @@
         <module>Common</module>
         <module>10-Trie</module>
         <module>11-Sort</module>
+        <module>12-UnionFind</module>
     </modules>
 
     <properties>
