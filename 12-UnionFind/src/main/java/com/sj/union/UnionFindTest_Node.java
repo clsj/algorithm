@@ -34,7 +34,8 @@ public class UnionFindTest_Node {
     }
 
     public static void main(String[] args) {
-        Integer[] data = Integers.ascOrder(0, 11);
+//        Integer[] data = Integers.ascOrder(1, 12);
+        Integer[] data = new Integer[] {2, 4, 7, 5, 6, 3, 10, 20, 11, 32, 13, 31};
         test(new UnionFind_QF_Node<Integer>(data));
 
     }
