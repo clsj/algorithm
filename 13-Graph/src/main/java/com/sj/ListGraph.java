@@ -130,7 +130,9 @@ public class ListGraph<V, E> implements Graph<V, E>{
         outEdges.clear();
     }
 
-    void bfs(V begin, Visitor<V, E> visitor) {
+
+    @Override
+    public void bfs(V begin, Visitor<V> visitor) {
         Vertex<V, E> beginVertex = vertices.get(begin);
 
         if (beginVertex == null) {
@@ -144,7 +146,12 @@ public class ListGraph<V, E> implements Graph<V, E>{
 
         while (!queue.isEmpty()) {
             Vertex<V, E> pollVertex = queue.poll();
-            visitor.visit(pollVertex);
+
+            if (visitor != null) {
+                visitor.visit(pollVertex.value);
+            }else {
+                System.out.println(pollVertex.value);
+            }
 
             Set<Edge<V, E>> outEdges = pollVertex.outEdges;
             outEdges.forEach(outEdge -> {
@@ -157,58 +164,121 @@ public class ListGraph<V, E> implements Graph<V, E>{
         }
     }
 
-    public static abstract class Visitor<V, E> {
-        public abstract void visit(Vertex<V, E> vertex);
-    }
-
-
+    // 使用栈来实现
     @Override
-    public void bfs(V begin) {
+    public void dfs(V begin, Visitor<V> visitor) {
         Vertex<V, E> beginVertex = vertices.get(begin);
 
         if (beginVertex == null) {
             return;
         }
+
         Set<Vertex<V, E>> lisVertex = new HashSet<>();
-        Queue<Vertex<V, E>> queue = new LinkedList<>();
-        queue.offer(beginVertex);
+        Stack<Vertex<V, E>> vertexStack = new Stack<>();
+        vertexStack.push(beginVertex);
+
+        if (visitor != null) {
+            visitor.visit(beginVertex.value);
+        }else {
+            System.out.println(beginVertex);
+        }
+
+
         lisVertex.add(beginVertex);
 
+        while (!vertexStack.empty()) {
 
-        while (!queue.isEmpty()) {
-            Vertex<V, E> pollVertex = queue.poll();
-            System.out.println(pollVertex);
+            Vertex<V, E> vertex = vertexStack.pop();
 
-            Set<Edge<V, E>> outEdges = pollVertex.outEdges;
-            outEdges.forEach(outEdge -> {
-                Vertex<V, E> to = outEdge.to;
-                if (!lisVertex.contains(to)) {
-                    queue.offer(to);
-                    lisVertex.add(to);
+            for (Edge<V, E> outEdge: vertex.outEdges) {
+                if (!lisVertex.contains(outEdge.to)) {
+                    vertexStack.push(vertex);
+                    vertexStack.push(outEdge.to);
+                    lisVertex.add(outEdge.to);
+
+                    if (visitor != null) {
+                        visitor.visit(outEdge.to.value);
+                    }else {
+                        System.out.println(outEdge.to);
+                    }
+
+                    // 找到其中一个就break
+                    break;
                 }
-            });
+            }
         }
+
     }
 
-    @Override
-    public void dfs(V begin) {
+
+    public void dfsV2(V begin, Visitor<V> visitor) {
         Vertex<V, E> beginVertex = vertices.get(begin);
-        Set<Vertex<V, E>> lisVertex = new HashSet<>();
+
         if (beginVertex == null) {
             return;
         }
-        dfs(beginVertex, lisVertex);
+        Set<Vertex<V, E>> lisVertex = new HashSet<>();
+        dfs(beginVertex, lisVertex, visitor);
     }
 
-    public void dfs(Vertex<V, E> vertex, Set<Vertex<V, E>> lisVertex) {
-        System.out.println(vertex);
+    public void dfs(Vertex<V, E> vertex, Set<Vertex<V, E>> lisVertex, Visitor<V> visitor) {
+        if (visitor != null) {
+            visitor.visit(vertex.value);
+        }else {
+            System.out.println(vertex);
+        }
+
         lisVertex.add(vertex);
         Set<Edge<V, E>> outEdges = vertex.outEdges;
         outEdges.forEach(outEdge -> {
             if (!lisVertex.contains(outEdge.to)) {
-                dfs(outEdge.to, lisVertex);
+                dfs(outEdge.to, lisVertex, visitor);
             }
         });
+    }
+
+    @Override
+    public List<V> topologicalSort() {
+
+        List<V> list = new ArrayList<>();
+
+        if (vertices.isEmpty()) {
+            return null;
+        }
+
+        Queue<Vertex<V, E>> queue = new LinkedList<>();
+
+        Map<V, Integer> map = new HashMap<>();
+        vertices.forEach((V v, Vertex<V, E> vertex) -> {
+            int size = vertex.inEdges.size();
+            if (size == 0) {
+                queue.offer(vertex);
+            }
+            map.put(v, size);
+        });
+
+        while (!queue.isEmpty()) {
+            // 找到为0的添加到list中
+            Vertex<V, E> poll = queue.poll();
+            list.add(poll.value);
+
+            for (Edge<V, E> edge : poll.outEdges) {
+                Vertex<V, E> to = edge.to;
+
+                Integer integer = map.get(to.value);
+                if (integer - 1 == 0) {
+                    queue.offer(to);
+                }
+                map.replace(to.value, integer - 1);
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public Set<EdgeInfo<V, E>> mst() {
+        return null;
     }
 
     public static class Vertex<V, E> {
