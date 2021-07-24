@@ -2,11 +2,15 @@ package com.sj;
 
 import java.util.*;
 
-public class ListGraph<V, E> implements Graph<V, E>{
+public class ListGraph<V, E> extends AbstractGraph<V, E> {
 
     // 存储顶点
     private final Map<V, Vertex<V, E>> vertices = new HashMap<>();
     private final Set<Edge<V, E>> edges = new HashSet<>();
+
+    ListGraph(WeightManager<E> weightManager) {
+        super(weightManager);
+    }
 
     public void print() {
         vertices.forEach((V value, Vertex<V, E> vertex) -> {
@@ -278,7 +282,72 @@ public class ListGraph<V, E> implements Graph<V, E>{
 
     @Override
     public Set<EdgeInfo<V, E>> mst() {
-        return null;
+        return kruskal();
+    }
+
+    private Set<EdgeInfo<V, E>> prim() {
+        Set<EdgeInfo<V, E>> edgeInfos = new HashSet<>();
+
+        if (!vertices.values().iterator().hasNext()) {
+            return edgeInfos;
+        }
+        Set<Vertex<V, E>> addVertex = new HashSet<>();
+        Vertex<V, E> vertex = vertices.values().iterator().next();
+        addVertex.add(vertex);
+        BinaryHeap<Edge<V, E>> heap = new BinaryHeap<Edge<V, E>>(vertex.outEdges, edgeComparator);
+
+        // 边是顶点数减1
+        int edgeSize = vertices.size() - 1;
+        while (!heap.isEmpty() && edgeInfos.size() < edgeSize) {
+            // 最小的边
+            Edge<V, E> edge = heap.remove();
+            if (addVertex.contains(edge.to)) {
+                continue;
+            }
+            edgeInfos.add(edge.edgeInfo());
+            addVertex.add(edge.to);
+            heap.addAll(edge.to.outEdges);
+        }
+
+        return edgeInfos;
+    }
+
+    private final Comparator<Edge<V, E>> edgeComparator = new Comparator<Edge<V, E>>() {
+        @Override
+        public int compare(Edge<V, E> o1, Edge<V, E> o2) {
+            return -weightManager.compare(o1.weight, o2.weight);
+        }
+    };
+
+    private Set<EdgeInfo<V, E>> kruskal() {
+        int edgeSize = vertices.size() - 1;
+
+        if (edgeSize == -1) {
+            return null;
+        }
+
+        Set<EdgeInfo<V, E>> edgeInfos = new HashSet<>();
+        // 存储的是顶点
+        UnionFind<Vertex<V, E>> uf = new UnionFind<>();
+
+        vertices.forEach((V v, Vertex<V, E> vertex) -> {
+            uf.makeSet(vertex);
+        });
+
+        BinaryHeap<Edge<V, E>> heap = new BinaryHeap<Edge<V, E>>(edges, edgeComparator);
+
+        while (!heap.isEmpty() && edgeInfos.size() < edgeSize) {
+            // 最小的边
+            Edge<V, E> edge = heap.remove();
+            // 使用并查集
+            // 如果不是一个顶点就可以选
+            if (!uf.isSame(edge.to, edge.from)) {
+                edgeInfos.add(edge.edgeInfo());
+                uf.union(edge.to, edge.from);
+            }
+        }
+
+        return edgeInfos;
     }
 
     public static class Vertex<V, E> {
@@ -313,14 +382,18 @@ public class ListGraph<V, E> implements Graph<V, E>{
         }
     }
 
-    private static class Edge<V, E> {
+    private static class Edge<V, E>{
         Vertex<V, E> from;
         Vertex<V, E> to;
         E weight;
 
-        public Edge(Vertex<V, E> from, Vertex<V, E> to) {
+        Edge(Vertex<V, E> from, Vertex<V, E> to) {
             this.from = from;
             this.to = to;
+        }
+
+        private EdgeInfo<V, E> edgeInfo() {
+            return new EdgeInfo<>(from.value, to.value, weight);
         }
 
         @Override
@@ -345,6 +418,8 @@ public class ListGraph<V, E> implements Graph<V, E>{
                     ", weight=" + weight +
                     '}';
         }
+
+
     }
 
 }

@@ -2,12 +2,31 @@ package com.sj;
 
 import com.sj.printer.BinaryTreeInfo;
 
+import java.util.Collection;
 import java.util.Comparator;
 
 public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
 
     private E[] elements;
     private static final int DEFAULT_CAPACITY = 10;
+
+    public BinaryHeap(Collection<E> elements, Comparator<E> comparator) {
+        super(comparator);
+
+        if (elements == null) {
+            this.elements = (E[])new Object[DEFAULT_CAPACITY];
+        }else {
+            int capacity = Math.max(DEFAULT_CAPACITY, elements.size());
+            this.elements = (E[])new Object[capacity];
+
+            size = elements.size();
+            int i = 0;
+            for (E element : elements) {
+                this.elements[i++] = element;
+            }
+            heapify();
+        }
+    }
 
     // 左节点 2n + 1  右节点 2n + 2
     public BinaryHeap(E[] elements, Comparator<E> comparator) {
@@ -37,13 +56,8 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
         for (int i = (size >> 1) - 1; i >= 0 ; i--) {
             siftDown(i);
         }
-
-
     }
 
-
-//    private void heapify() {
-//    }
 
     public BinaryHeap(E[] elements) {
         this(elements, null);
@@ -51,11 +65,11 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
 
     // 左节点 2n + 1  右节点 2n + 2
     public BinaryHeap(Comparator<E> comparator) {
-        this(null, comparator);
+        this((E[]) null, comparator);
     }
 
     public BinaryHeap() {
-        this(null, null);
+        this((E[]) null, null);
     }
 
     @Override
@@ -72,6 +86,13 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
         ensureCapacity(size + 1);
         elements[size++] = element;
         siftUp(size - 1);
+    }
+
+    @Override
+    public void addAll(Collection<E> elements) {
+        for (E element : elements) {
+            add(element);
+        }
     }
 
     @Override
@@ -168,7 +189,7 @@ public class BinaryHeap<E> extends AbstractHeap<E> implements BinaryTreeInfo {
 
         elements = newElements;
 
-        System.out.println("arrayList扩容 old:" + oldCapacity + " new:" + newCapacity);
+        // System.out.println("arrayList扩容 old:" + oldCapacity + " new:" + newCapacity);
     }
 
     @Override
