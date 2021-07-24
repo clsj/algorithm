@@ -1,5 +1,7 @@
 package com.sj;
 
+import javax.jws.Oneway;
+import java.util.Map;
 import java.util.Set;
 
 public class GraphTest {
@@ -39,14 +41,18 @@ public class GraphTest {
 
     public static void main(String[] args) {
 
-        AbstractGraph<Object, Double> abstractGraph = undirectedGraph(Data.MST_01);
+        AbstractGraph<Object, Double> abstractGraph = undirectedGraph(Data.SP);
 
-        Set<AbstractGraph.EdgeInfo<Object, Double>> mst = abstractGraph.mst();
+        Map<Object, Double> map = abstractGraph.shortestPath1("A");
+        map.forEach((Object o, Double d) -> {
+             System.out.println(o + "   " + d);
+        });
 
-        for (AbstractGraph.EdgeInfo<Object, Double> edgeInfo : mst) {
-            System.out.println(edgeInfo);
-        }
+        Map<Object, AbstractGraph.PathInfo<Object, Double>> map2 = abstractGraph.shortestPath2("A");
 
+        map2.forEach((Object o, AbstractGraph.PathInfo<Object, Double> pathInfo) -> {
+            System.out.println(o + "   " + pathInfo);
+        });
     }
 
     /**

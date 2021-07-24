@@ -1,7 +1,6 @@
 package com.sj;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractGraph<V, E> {
 
@@ -40,9 +39,32 @@ public abstract class AbstractGraph<V, E> {
 
     public abstract Set<EdgeInfo<V, E>> mst();
 
+    // 获取最短路径 V到达的节点 E最短路径
+    public abstract Map<V, E> shortestPath1(V begin);
+
+    public abstract Map<V, PathInfo<V, E>> shortestPath2(V begin);
+
     public static abstract class Visitor<V> {
         public abstract void visit(V value);
     }
+
+    public static class PathInfo<V, E> {
+        List<EdgeInfo<V, E>> edgeInfos = new LinkedList<>();
+        E weight;
+
+        public PathInfo(E weight) {
+            this.weight = weight;
+        }
+
+        @Override
+        public String toString() {
+            return "PathInfo{" +
+                    "edgeInfos=" + edgeInfos +
+                    ", weight=" + weight +
+                    '}';
+        }
+    }
+
 
     public static class EdgeInfo<V, E> {
         V from;

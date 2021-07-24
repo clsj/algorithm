@@ -350,6 +350,169 @@ public class ListGraph<V, E> extends AbstractGraph<V, E> {
         return edgeInfos;
     }
 
+
+
+
+    @Override
+    public Map<V, E> shortestPath1(V begin) {
+        Map<V, E> shortestPaths = new HashMap<>();
+
+        // 存储正在计算的路径
+        Map<Vertex<V, E>, E> paths = new HashMap<>();
+
+        Vertex<V, E> vertex = vertices.get(begin);
+        vertex.outEdges.forEach(edge -> {
+            paths.put(edge.to, edge.weight);
+        });
+
+        while (!paths.isEmpty()) {
+            // 找到最短路径
+            Map.Entry<Vertex<V, E>, E> minPath = getMinPath(paths);
+            paths.remove(minPath.getKey());
+            // 存储在shortestPaths中
+            shortestPaths.put(minPath.getKey().value, minPath.getValue());
+
+            Vertex<V, E> vertexKey = minPath.getKey();
+            E weight = minPath.getValue();
+            vertexKey.outEdges.forEach(edge -> {
+                // 找到to
+                Vertex<V, E> to = edge.to;
+                if (shortestPaths.containsKey(to.value) ){
+                    return;
+                }
+                // 查看paths中是否有to，如果没有添加，如果有就比较存最小的
+                if (paths.containsKey(to)) {
+                    // 存在判断
+                    E oldWeight = paths.get(to);
+                    E newWeight = weightManager.add(weight, edge.weight);
+
+                    // newWeight小 更新weight
+                    if (weightManager.compare(oldWeight, newWeight) > 0) {
+                        paths.replace(to, newWeight);
+                    }
+                }else {
+                    paths.put(to, edge.weight);
+                }
+            });
+        }
+
+        shortestPaths.remove(begin);
+
+        return shortestPaths;
+    }
+
+
+
+    @Override
+    public Map<V, PathInfo<V, E>> shortestPath2(V begin) {
+        return dijkstra(begin);
+    }
+
+    // dijkstra求最短路径算法
+    private Map<V, PathInfo<V, E>> dijkstra(V begin) {
+        Map<V, PathInfo<V, E>> shortestPaths = new HashMap<>();
+
+        Map<Vertex<V, E>, PathInfo<V, E>> paths = new HashMap<>();
+        Vertex<V, E> vertex = vertices.get(begin);
+        vertex.outEdges.forEach(edge -> {
+            PathInfo<V, E> info = new PathInfo<>(edge.weight);
+            info.edgeInfos.add(edge.edgeInfo());
+            paths.put(edge.to, info);
+        });
+
+        while (!paths.isEmpty()) {
+            // 找到最短路径
+            Map.Entry<Vertex<V, E>, PathInfo<V, E>> minPath = getMinPath2(paths);
+            paths.remove(minPath.getKey());
+            // 存储在shortestPaths中
+            shortestPaths.put(minPath.getKey().value, minPath.getValue());
+
+            Vertex<V, E> vertexKey = minPath.getKey();
+
+            vertexKey.outEdges.forEach(edge -> {
+                if (shortestPaths.containsKey(edge.to.value) ){
+                    return;
+                }
+                relax(edge, shortestPaths.get(edge.from.value), paths);
+            });
+        }
+
+        shortestPaths.remove(begin);
+
+        return shortestPaths;
+    }
+
+    private void relax(Edge<V, E> edge, PathInfo<V, E> fromPathInfo, Map<Vertex<V, E>, PathInfo<V, E>> paths) {
+        // 找到to
+        Vertex<V, E> to = edge.to;
+
+        E weight = fromPathInfo.weight;
+
+        // 查看paths中是否有to，如果没有添加，如果有就比较存最小的
+        if (paths.containsKey(to)) {
+
+            PathInfo<V, E> vePathInfo = paths.get(to);
+
+            // 存在判断
+            E oldWeight = vePathInfo.weight;
+            E newWeight = weightManager.add(weight, edge.weight);
+
+            // newWeight小 更新weight
+            if (weightManager.compare(oldWeight, newWeight) > 0) {
+                vePathInfo.weight = newWeight;
+                // 如果是老的 先清空
+                vePathInfo.edgeInfos.clear();
+                // 将from的路径加进去
+                vePathInfo.edgeInfos.addAll(fromPathInfo.edgeInfos);
+                // 加上新的路径
+                vePathInfo.edgeInfos.add(edge.edgeInfo());
+            }
+        }else {
+            // 如果不存在 初始化 不要忘了weight是总的，还有edgeInfo
+            PathInfo<V, E> info = new PathInfo<>(weightManager.add(weight, edge.weight));
+            info.edgeInfos.add(edge.edgeInfo());
+            paths.put(to, info);
+        }
+    }
+
+
+    // 获取paths中的最短路径
+    private Map.Entry<Vertex<V, E>, PathInfo<V, E>> getMinPath2(Map<Vertex<V, E>, PathInfo<V, E>> paths) {
+        Iterator<Map.Entry<Vertex<V, E>, PathInfo<V, E>>> iterator = paths.entrySet().iterator();
+        Map.Entry<Vertex<V, E>, PathInfo<V, E>> min = null;
+        if (iterator.hasNext()) {
+            min = iterator.next();
+        }
+
+        while (iterator.hasNext()) {
+            Map.Entry<Vertex<V, E>, PathInfo<V, E>> next = iterator.next();
+
+            if (weightManager.compare(min.getValue().weight, next.getValue().weight) > 0) {
+                min = next;
+            }
+        }
+        return min;
+    }
+
+    // 获取paths中的最短路径
+    private Map.Entry<Vertex<V, E>, E> getMinPath(Map<Vertex<V, E>, E> paths) {
+        Iterator<Map.Entry<Vertex<V, E>, E>> iterator = paths.entrySet().iterator();
+        Map.Entry<Vertex<V, E>, E> min = null;
+        if (iterator.hasNext()) {
+            min = iterator.next();
+        }
+
+        while (iterator.hasNext()) {
+            Map.Entry<Vertex<V, E>, E> next = iterator.next();
+
+            if (weightManager.compare(min.getValue(), next.getValue()) > 0) {
+                min = next;
+            }
+        }
+        return min;
+    }
+
+
     public static class Vertex<V, E> {
         V value;
         Set<Edge<V, E>> inEdges = new HashSet<>();
