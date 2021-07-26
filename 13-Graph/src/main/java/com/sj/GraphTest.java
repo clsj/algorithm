@@ -1,8 +1,6 @@
 package com.sj;
 
-import javax.jws.Oneway;
 import java.util.Map;
-import java.util.Set;
 
 public class GraphTest {
 
@@ -41,18 +39,33 @@ public class GraphTest {
 
     public static void main(String[] args) {
 
-        AbstractGraph<Object, Double> abstractGraph = undirectedGraph(Data.SP);
+        AbstractGraph<Object, Double> abstractGraph = directedGraph(Data.NEGATIVE_WEIGHT1);
 
-        Map<Object, Double> map = abstractGraph.shortestPath1("A");
-        map.forEach((Object o, Double d) -> {
-             System.out.println(o + "   " + d);
+//        Map<Object, AbstractGraph.PathInfo<Object, Double>> map2 = abstractGraph.shortestPathDijkstra("A");
+//        System.out.println("==========shortestPathDijkstra===============");
+//
+//        map2.forEach((Object o, AbstractGraph.PathInfo<Object, Double> pathInfo) -> {
+//            System.out.println(o + "   " + pathInfo);
+//        });
+//
+//        System.out.println("============shortestPathBellmanFord=============");
+//
+//        Map<Object, AbstractGraph.PathInfo<Object, Double>> map3 = abstractGraph.shortestPathBellmanFord("A");
+//
+//        map3.forEach((Object o, AbstractGraph.PathInfo<Object, Double> pathInfo) -> {
+//            System.out.println(o + "   " + pathInfo);
+//        });
+
+
+        Map<Object, Map<Object, AbstractGraph.PathInfo<Object, Double>>> floyed = abstractGraph.shortestFloyed();
+
+        floyed.forEach((Object v, Map<Object, AbstractGraph.PathInfo<Object, Double>> map) -> {
+            System.out.println(v);
+            map.forEach((Object o, AbstractGraph.PathInfo<Object, Double> pathInfo) -> {
+                System.out.println(o + "   " + pathInfo);
+            });
         });
 
-        Map<Object, AbstractGraph.PathInfo<Object, Double>> map2 = abstractGraph.shortestPath2("A");
-
-        map2.forEach((Object o, AbstractGraph.PathInfo<Object, Double> pathInfo) -> {
-            System.out.println(o + "   " + pathInfo);
-        });
     }
 
     /**

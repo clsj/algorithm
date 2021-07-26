@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fibonacci</artifactId>
+    <artifactId>15-BackTracking</artifactId>
 
 
 </project>
