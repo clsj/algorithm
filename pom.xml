@@ -15,7 +15,7 @@
         <module>03-LinkedList</module>
         <module>04-Stack</module>
         <module>05-Queue</module>
-        <module>06-tree</module>
+        <module>06-Tree</module>
         <module>07-Set</module>
         <module>08-Map</module>
         <module>09-Heap</module>
@@ -25,6 +25,9 @@
         <module>13-Graph</module>
         <module>14-Recursion</module>
         <module>15-BackTracking</module>
+        <module>16-Greedy</module>
+        <module>17-DivideAndConquer</module>
+        <module>18-DynamicProgramming</module>
     </modules>
 
     <properties>
