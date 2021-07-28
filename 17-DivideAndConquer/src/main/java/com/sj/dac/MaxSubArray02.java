@@ -21,20 +21,20 @@ public class MaxSubArray02 {
         // 获取中间的最大值
         // [i,mid) + [mid,j)的值
         int leftMax = nums[mid - 1];
+        int leftSum = nums[mid - 1];
         for (int i = mid - 2; i >= begin ; i--) {
-            if ((leftMax + nums[i]) < leftMax) {
-                break;
-            }else {
-                leftMax = leftMax + nums[i];
+            leftSum += nums[i];
+            if (leftSum > leftMax) {
+                leftMax = leftSum;
             }
         }
 
         int rightMax = nums[mid];
+        int rightSum = nums[mid];
         for (int i = mid + 1; i < end ; i++) {
-            if ((rightMax + nums[i]) < rightMax) {
-                break;
-            }else {
-                rightMax = rightMax + nums[i];
+            rightSum += nums[i];
+            if (rightSum > rightMax) {
+                rightMax = rightSum;
             }
         }
 
