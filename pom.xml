@@ -28,6 +28,7 @@
         <module>16-Greedy</module>
         <module>17-DivideAndConquer</module>
         <module>18-DynamicProgramming</module>
+        <module>19-SkipList</module>
     </modules>
 
     <properties>
