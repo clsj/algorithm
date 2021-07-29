@@ -29,6 +29,7 @@
         <module>17-DivideAndConquer</module>
         <module>18-DynamicProgramming</module>
         <module>19-SkipList</module>
+        <module>20-Sequence</module>
     </modules>
 
     <properties>
